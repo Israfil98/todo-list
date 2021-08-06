@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { v1 } from 'uuid';
+import { Container, Grid, Paper } from '@material-ui/core';
 
 import './App.css';
 
 import TodoList from './components/TodoList/TodoList';
 import AddItemForm from './components/common/AddItemForm/AddItemForm';
+import AppHeader from './components/AppBar/AppHeader';
 
 //типизируем обьект Task, для того чтобы не ошибиться в написании св-в и не пропустить один из них
 export type TaskType = {
@@ -18,7 +20,6 @@ type TodoListType = {
     todoListTitle: string
     filter: FilterValuesType
 }
-
 type TasksStateType = {
     [key: string]: Array<TaskType>
 }
@@ -27,7 +28,6 @@ function App() {
     //создаем наш псевдо стейт, которые будем передавать в TodoList компоненту в качестве пропсов
     //так же указываем нужный тип данных стейта
     //засовываем наш стейт в хук useState, для того чтобы реакт мог понимать когда ему перерисовывать UI
-
     const todoListId1 = v1()
     const todoListId2 = v1()
     const [todoLists, setTodoLists] = useState<Array<TodoListType>>([
@@ -49,7 +49,6 @@ function App() {
         ]
     })
 
-    //ф-ция по удалению тасок из массива тасок
     function removeTask(todoListId: string, taskId: string) {
         const tasks = tasksObj[todoListId]
         //метод массива filter возвращает новый массив, пропуская в него то, что будет указано в колбэк ф-ции
@@ -119,35 +118,46 @@ function App() {
 
     return (
         <div className="App">
-            <AddItemForm addItem={ addTodoList }/>
-            {
-                todoLists.map((tl) => {
-                    let tasksForTodoList = tasksObj[tl.todoListId]
+            <AppHeader/>
+            <Container fixed>
+                <Grid container style={ {padding: '10px', marginBottom: '10px'} }>
+                    <AddItemForm addItem={ addTodoList }/>
+                </Grid>
+                <Grid container spacing={ 5 }>
+                    {
+                        todoLists.map((tl) => {
+                            let tasksForTodoList = tasksObj[tl.todoListId]
 
-                    if (tl.filter === 'completed') {
-                        tasksForTodoList = tasksObj[tl.todoListId].filter((task) => task.status)
-                    } else if (tl.filter === 'active') {
-                        tasksForTodoList = tasksObj[tl.todoListId].filter((task) => !task.status)
+                            if (tl.filter === 'completed') {
+                                tasksForTodoList = tasksObj[tl.todoListId].filter((task) => task.status)
+                            } else if (tl.filter === 'active') {
+                                tasksForTodoList = tasksObj[tl.todoListId].filter((task) => !task.status)
+                            }
+
+                            return (
+                                <Grid item>
+                                    <Paper elevation={5} style={ {padding: '10px', margin: '5px'} }>
+                                        <TodoList
+                                            key={ tl.todoListId }
+                                            id={ tl.todoListId }
+                                            todoListTitle={ tl.todoListTitle }
+                                            tasks={ tasksForTodoList }
+                                            removeTask={ removeTask }
+                                            filter={ tl.filter }
+                                            changeFilter={ changeFilter }
+                                            addTask={ addTask }
+                                            changeTaskStatus={ changeTaskStatus }
+                                            removeTodoList={ removeTodoList }
+                                            changeTaskTitle={ changeTaskTitle }
+                                            changeTodoListTitle={ changeTodoListTitle }
+                                        />
+                                    </Paper>
+                                </Grid>
+                            )
+                        })
                     }
-
-                    return (
-                        <TodoList
-                            key={ tl.todoListId }
-                            id={ tl.todoListId }
-                            todoListTitle={ tl.todoListTitle }
-                            tasks={ tasksForTodoList }
-                            removeTask={ removeTask }
-                            filter={ tl.filter }
-                            changeFilter={ changeFilter }
-                            addTask={ addTask }
-                            changeTaskStatus={ changeTaskStatus }
-                            removeTodoList={ removeTodoList }
-                            changeTaskTitle={ changeTaskTitle }
-                            changeTodoListTitle={ changeTodoListTitle }
-                        />
-                    )
-                })
-            }
+                </Grid>
+            </Container>
         </div>
     );
 }

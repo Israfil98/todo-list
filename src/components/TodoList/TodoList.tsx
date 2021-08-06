@@ -3,6 +3,8 @@ import React, { ChangeEvent } from 'react';
 import { FilterValuesType, TaskType } from '../../App';
 import AddItemForm from '../common/AddItemForm/AddItemForm';
 import EditableSpan from '../common/EditableSpan/EditableSpan';
+import DeleteButton from '../common/DeleteButton/DeleteButton';
+import { Button, Checkbox } from '@material-ui/core';
 
 //типизируем пропсы для компонента TodoList
 type PropsType = {
@@ -34,8 +36,7 @@ function TodoList(props: PropsType) {
         <div>
             <h3>
                 <EditableSpan title={ props.todoListTitle } onTitleChange={ changeTodoListTitle }/>
-                <button onClick={ removeTodoListHandler }>x
-                </button>
+                <DeleteButton deleteCallback={ removeTodoListHandler }/>
             </h3>
             <AddItemForm addItem={ addTaskHandler }/>
             <ul>
@@ -53,24 +54,27 @@ function TodoList(props: PropsType) {
 
                         return (
                             <li key={ task.taskId }>
-                                <input type="checkbox" checked={ task.status } onChange={ onTaskStatusChangeHandler }/>
+                                <Checkbox  checked={ task.status } onChange={ onTaskStatusChangeHandler }/>
                                 <EditableSpan title={ task.taskTitle } onTitleChange={ onTaskTitleChangeHandler }/>
-                                <button onClick={ removeTaskHandler }>x</button>
+                                <DeleteButton deleteCallback={ removeTaskHandler }/>
                             </li>
                         )
                     })
                 }
             </ul>
             <div>
-                <button className={ props.filter === 'all' ? 'active-filter' : '' }
-                        onClick={ () => props.changeFilter(props.id, 'all') }>All
-                </button>
-                <button className={ props.filter === 'active' ? 'active-filter' : '' }
-                        onClick={ () => props.changeFilter(props.id, 'active') }>Active
-                </button>
-                <button className={ props.filter === 'completed' ? 'active-filter' : '' }
-                        onClick={ () => props.changeFilter(props.id, 'completed') }>Completed
-                </button>
+                <Button variant={ props.filter === 'all' ? 'contained' : 'outlined' }
+                        color='primary'
+                        onClick={ () => props.changeFilter(props.id, 'all') }
+                >All</Button>
+                <Button variant={ props.filter === 'active' ? 'contained' : 'outlined' }
+                        color='primary'
+                        onClick={ () => props.changeFilter(props.id, 'active') }
+                >Active</Button>
+                <Button variant={ props.filter === 'completed' ? 'contained' : 'outlined' }
+                        color='primary'
+                        onClick={ () => props.changeFilter(props.id, 'completed') }
+                >Completed</Button>
             </div>
         </div>
     );
